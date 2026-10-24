@@ -1,0 +1,58 @@
+name: Create Pull Request
+
+on:
+  workflow_run:
+    workflows:
+      - Application CI
+    types:
+      - completed
+    branches:
+      - test
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    name: Create or update PR
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'test'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create or update pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          existing_pr=$(gh pr list \
+            --base main \
+            --head test \
+            --state open \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -n "$existing_pr" ]; then
+            echo "An open PR already exists: #$existing_pr"
+            echo "GitHub will update its contents automatically as new commits arrive."
+          else
+            gh pr create \
+              --base main \
+              --head test \
+              --title "CI: Merge test into main" \
+              --body "Automated pull request created after Application CI passed on the test branch. Please review the changes and confirm all required checks pass before merging."
+          fi
+
+
+
+# workflow_run:	Waits for the existing CI workflow to finish.
+# workflows: Application CI	Identifies your existing workflow by its exact name.
+# conclusion == 'success'	:Continues only when CI succeeds.
+# head_branch == 'test'	:Restricts automation to the test branch.
+# pull-requests: write	Allows the job to create a pull request.
+# gh pr list	:Checks whether a PR from test to main is already open.
+# gh pr create	:Creates a PR only if one doesn't already exist.
+# >- :it tells the YAML parser: "Treat this multi-line block of code as a single, continuous line of text, and strip out any accidental blank lines at the end."
