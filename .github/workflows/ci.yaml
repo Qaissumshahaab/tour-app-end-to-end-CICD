@@ -1,0 +1,55 @@
+name: Application CI
+
+on:
+  push:
+    branches:
+      - test
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Build application
+        run: npm run build
+
+
+
+
+# contents: read This specifies that the workflow is only allowed to view and pull down the repository's files (like cloning the code to run tests). It explicitly blocks the workflow from writing to your repository, pushing new code, or creating releases. This follows the security principle of "least privilege."
+
+
+# concurrency:
+# This block prevents redundant, wasteful, or overlapping workflow runs when multiple updates happen rapidly.
+
+# • group: ci-${{ github.workflow }}-${{ github.ref }}: This creates a unique tracking ID for the job based on the workflow name and the specific branch or Pull Request (github.ref).
+
+# • cancel-in-progress: true-- If you push a new commit to a Pull Request while an older commit's tests are still actively running inside this group, GitHub will instantly terminate the older run and focus resources entirely on the newest commit.
+
+# When you enable cache: npm, GitHub saves a snapshot of your global npm download cache (~/.npm) after a successful run. On subsequent workflow runs, instead of fetching everything over the internet, GitHub pulls the files directly from its internal data centers. also it saves github actions allocated minutes to your account. This is especially useful for large projects with many dependencies, as it can significantly speed up the installation process and reduce the time it takes to run your CI/CD pipeline.
