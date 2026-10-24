@@ -56,3 +56,4 @@ jobs:
 # gh pr list	:Checks whether a PR from test to main is already open.
 # gh pr create	:Creates a PR only if one doesn't already exist.
 # >- :it tells the YAML parser: "Treat this multi-line block of code as a single, continuous line of text, and strip out any accidental blank lines at the end."
+# this aut-pr.yaml will only trigger if its on default branch of github too becuase we use workflow_run and that workflow_run event is triggered if its on default(main) branch according to github documentation.
