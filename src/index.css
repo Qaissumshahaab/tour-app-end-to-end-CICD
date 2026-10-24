@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-pine-950: #07140f;
+  --color-pine-900: #0b1f17;
+  --color-pine-800: #103021;
+  --color-pine-700: #15442e;
+  --color-pine-600: #1c5c3e;
+  --color-pine-500: #257a51;
+  --color-pine-400: #3aa06e;
+  --color-pine-300: #6fc497;
+  --color-pine-200: #a9e0c3;
+  --color-pine-100: #def2e6;
+
+  --color-glacier-500: #2b8fd6;
+  --color-glacier-400: #4fb0ef;
+  --color-glacier-300: #8fd0f7;
+
+  --color-sunset-500: #f2994a;
+  --color-sunset-400: #f7b267;
+  --color-sunset-300: #ffd199;
+
+  --color-stone-950: #0d0f0e;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-stone-950);
+  color: var(--color-pine-100);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-sunset-500);
+  color: #0d0f0e;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0b1310;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-pine-600), var(--color-glacier-500));
+  border-radius: 999px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* GPU-friendly, cheap animated gradient (used sparingly) */
+.bg-aurora {
+  background: linear-gradient(120deg, #0b1f17, #103021, #0b2a3a, #0b1f17);
+  background-size: 300% 300%;
+  animation: aurora-shift 18s ease infinite;
+  will-change: background-position;
+}
+@keyframes aurora-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-sunset-400), var(--color-pine-200) 60%, var(--color-glacier-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: rgba(10, 24, 18, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Respect user preference: kill heavy motion for those who ask */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg-aurora { animation: none; }
+}
+
+/* Low-end-device safety net: a class toggled by JS perf check */
+.reduce-fx .bg-aurora { animation: none; background-position: 0% 50%; }
+.reduce-fx .parallax-layer { transform: none !important; }
