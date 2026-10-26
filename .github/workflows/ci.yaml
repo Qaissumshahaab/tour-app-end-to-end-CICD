@@ -91,7 +91,7 @@ jobs:
           ignore-unfixed: true
           exit-code: '1'
 
-         # Step 3: Log in to GHCR on main only
+      # Step 3: Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
@@ -103,10 +103,13 @@ jobs:
       # Step 4: Tag the scanned image with the Git commit SHA
       - name: Tag Docker image for GHCR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
         run: |
+          IMAGE_NAME=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+
           docker tag \
-            tour-app:${{ github.sha }} \
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            tour-app:${GITHUB_SHA} \
+            ghcr.io/${IMAGE_NAME}:${GITHUB_SHA}
 
       # Step 5: Push the same scanned image and record its digest
       - name: Publish Docker image to GHCR
@@ -116,7 +119,8 @@ jobs:
         run: |
           set -o pipefail
 
-          IMAGE="ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}"
+          IMAGE_NAME=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
+          IMAGE="ghcr.io/${IMAGE_NAME}:${GITHUB_SHA}"
 
           docker push "$IMAGE" 2>&1 | tee push.log
 
@@ -128,18 +132,26 @@ jobs:
           fi
 
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
-          echo "image=ghcr.io/${GITHUB_REPOSITORY}@${DIGEST}" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/${IMAGE_NAME}@${DIGEST}" >> "$GITHUB_OUTPUT"
 
           echo "Published image tag: $IMAGE"
           echo "Published image digest: $DIGEST"
-          echo "Kubernetes image reference: ghcr.io/${GITHUB_REPOSITORY}@${DIGEST}"
+          echo "Kubernetes image reference: ghcr.io/${IMAGE_NAME}@${DIGEST}"
 
       # Step 6: Display the final immutable image reference
       - name: Display published image digest
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          PUBLISHED_IMAGE: ${{ steps.publish_image.outputs.image }}
+          IMAGE_DIGEST: ${{ steps.publish_image.outputs.digest }}
         run: |
           echo "Published image:"
-          echo "${{ steps.publish_image.outputs.image }}"
+          echo "$PUBLISHED_IMAGE"
+          echo ""
+          echo "Image digest:"
+          echo "$IMAGE_DIGEST"
+
+
 
 
 
