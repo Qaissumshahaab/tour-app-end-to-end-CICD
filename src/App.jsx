@@ -60,7 +60,7 @@ function NotFound() {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 pt-24">
       <p className="text-6xl font-display font-bold text-gradient">404</p>
-      <p className="text-pine-200/70 mt-3">This trail doesn't exist. Let's head back to base camp1.</p>
+      <p className="text-pine-200/70 mt-3">This trail doesn't exist. Let's head back to base camp.</p>
       <a href="/" className="mt-6 px-6 py-3 rounded-full bg-sunset-400 text-pine-950 font-semibold">Back home</a>
     </div>
   );
