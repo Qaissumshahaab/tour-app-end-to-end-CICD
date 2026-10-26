@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: read
+  packages: write
+  
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -89,7 +91,55 @@ jobs:
           ignore-unfixed: true
           exit-code: '1'
 
+         # Step 3: Log in to GHCR on main only
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Step 4: Tag the scanned image with the Git commit SHA
+      - name: Tag Docker image for GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker tag \
+            tour-app:${{ github.sha }} \
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      # Step 5: Push the same scanned image and record its digest
+      - name: Publish Docker image to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: publish_image
+        shell: bash
+        run: |
+          set -o pipefail
+
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}"
+
+          docker push "$IMAGE" 2>&1 | tee push.log
+
+          DIGEST=$(grep -oE 'digest: sha256:[a-f0-9]+' push.log | tail -n 1 | awk '{print $2}')
+
+          if [ -z "$DIGEST" ]; then
+            echo "ERROR: Could not capture the published image digest."
+            exit 1
+          fi
+
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/${GITHUB_REPOSITORY}@${DIGEST}" >> "$GITHUB_OUTPUT"
+
+          echo "Published image tag: $IMAGE"
+          echo "Published image digest: $DIGEST"
+          echo "Kubernetes image reference: ghcr.io/${GITHUB_REPOSITORY}@${DIGEST}"
+
+      # Step 6: Display the final immutable image reference
+      - name: Display published image digest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "Published image:"
+          echo "${{ steps.publish_image.outputs.image }}"
 
 
 
