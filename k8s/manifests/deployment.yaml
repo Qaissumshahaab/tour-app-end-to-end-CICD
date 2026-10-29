@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tour-app-deployment
+  namespace: tour
+spec:
+  selector:
+    matchLabels:
+      app: tour-app
+  template:
+    metadata:
+      labels:
+        app: tour-app
+    spec:
+      containers:
+        - name: tour-app-container
+          image: ghcr.io/shimaal-tours-app-w/northern-tours:latest
+          ports:
+            - containerPort: 3000

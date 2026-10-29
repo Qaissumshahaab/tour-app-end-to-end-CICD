@@ -9,3 +9,7 @@ coverage
 npm-debug.log*
 Dockerfile*
 .dockerignore
+vercel.json
+sonar-project.properties
+.gitignore
+k8s
