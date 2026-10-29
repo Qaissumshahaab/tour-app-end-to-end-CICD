@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tour-app-service
+  namespace: tour
+  labels:
+    app: tour-app
+spec:
+  type: ClusterIP
+  selector:
+    app: tour-app
+  ports:
+    - name: http
+      port: 3001
+      targetPort: 8080

@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tour-app-ingress
+  labels:
+    app: tour-app
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  namespace: tour
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tour-app-service
+                port:
+                  name: http
+                  port: 3001
