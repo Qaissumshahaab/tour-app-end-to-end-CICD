@@ -4,6 +4,7 @@ metadata:
   name: tour-app-deployment
   namespace: tour
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: tour-app
@@ -12,15 +13,15 @@ spec:
       labels:
         app: tour-app
     spec:
-    securityContext:
-      runaAsNonRoot: true
-      runAsUser: 101
-      runAsGroup: 101
-      seccompProfile:
-        type: RuntimeDefault
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: tour-app-container
-          image: 
+          image: ghcr.io/shimaal-tours-app-w/northern-tours:latest
           ports:
             - containerPort: 8080
           securityContext:
@@ -30,21 +31,17 @@ spec:
             capabilities:
               drop:
                 - ALL
-           
-          
           volumeMounts:
-           - name: nginx-cache
-             mountPath: /var/cache/nginx
-           - name: nginx-run
-             mountPath: /run
-           - name: tmp
-             mountPath: /tmp
-
-          volumes:
-           - name: nginx-cache
-             emptyDir: {}
-           - name: nginx-run
-             emptyDir: {}
-           - name: tmp
-             emptyDir: {}
-
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /run
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
