@@ -12,8 +12,39 @@ spec:
       labels:
         app: tour-app
     spec:
+    securityContext:
+      runaAsNonRoot: true
+      runAsUser: 101
+      runAsGroup: 101
+      seccompProfile:
+        type: RuntimeDefault
       containers:
         - name: tour-app-container
-          image: ghcr.io/shimaal-tours-app-w/northern-tours:latest
+          image: 
           ports:
-            - containerPort: 3000
+            - containerPort: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+           
+          
+          volumeMounts:
+           - name: nginx-cache
+             mountPath: /var/cache/nginx
+           - name: nginx-run
+             mountPath: /run
+           - name: tmp
+             mountPath: /tmp
+
+          volumes:
+           - name: nginx-cache
+             emptyDir: {}
+           - name: nginx-run
+             emptyDir: {}
+           - name: tmp
+             emptyDir: {}
+
