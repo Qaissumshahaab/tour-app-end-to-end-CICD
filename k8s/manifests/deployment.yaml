@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tour-app-deployment
-  namespace: tour
+  
 spec:
   replicas: 2
   selector:
@@ -21,7 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: tour-app-container
-          image: ghcr.io/shimaal-tours-app-w/northern-tours:latest
+          image: ghcr.io/qaissumshahaab/tour-app-end-to-end-cicd:1eb7c37dc85484f3bfec640dbd5c56f891780457
           ports:
             - containerPort: 8080
           securityContext:
