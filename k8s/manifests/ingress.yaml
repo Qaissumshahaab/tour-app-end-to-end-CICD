@@ -6,11 +6,12 @@ metadata:
     app: tour-app
   annotations:
     kubernetes.io/ingress.class: nginx
-  namespace: tour
+  namespace: default
 spec:
   ingressClassName: nginx
   rules:
-    - http:
+    - host: 3.106.182.152.nip.io
+      http:
         paths:
           - path: /
             pathType: Prefix
@@ -18,5 +19,4 @@ spec:
               service:
                 name: tour-app-service
                 port:
-                  name: http
-                  port: 3002
+                  number: 3002

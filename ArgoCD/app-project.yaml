@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cicd-tour-app-argocd
+  namespace: argocd
+spec:
+  sourceRepos:
+    - 'https://github.com/Qaissumshahaab/tour-app-end-to-end-CICD.git'
+
+  destinations:
+    - namespace: default
+      server: https://kubernetes.default.svc
