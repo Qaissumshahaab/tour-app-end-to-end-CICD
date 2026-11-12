@@ -111,6 +111,10 @@ jobs:
             tour-app:${GITHUB_SHA} \
             ghcr.io/${IMAGE_NAME}:${GITHUB_SHA}
 
+          docker tag \
+            tour-app:${GITHUB_SHA} \
+            ghcr.io/${IMAGE_NAME}:latest  
+
       # Step 5: Push the same scanned image and record its digest
       - name: Publish Docker image to GHCR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -121,8 +125,10 @@ jobs:
 
           IMAGE_NAME=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
           IMAGE="ghcr.io/${IMAGE_NAME}:${GITHUB_SHA}"
+          IMAGE2="ghcr.io/${IMAGE_NAME}:latest"
 
           docker push "$IMAGE" 2>&1 | tee push.log
+          docker push "$IMAGE2" 2>&1 | tee -a push.log
 
           DIGEST=$(grep -oE 'digest: sha256:[a-f0-9]+' push.log | tail -n 1 | awk '{print $2}')
 
@@ -133,6 +139,7 @@ jobs:
 
           echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
           echo "image=ghcr.io/${IMAGE_NAME}@${DIGEST}" >> "$GITHUB_OUTPUT"
+          echo "image2=ghcr.io/${IMAGE_NAME}:latest" >> "$GITHUB_OUTPUT"
 
           echo "Published image tag: $IMAGE"
           echo "Published image digest: $DIGEST"
@@ -144,9 +151,13 @@ jobs:
         env:
           PUBLISHED_IMAGE: ${{ steps.publish_image.outputs.image }}
           IMAGE_DIGEST: ${{ steps.publish_image.outputs.digest }}
+          PUBLISHED_IMAGE2: ${{ steps.publish_image.outputs.image2 }}
         run: |
           echo "Published image:"
           echo "$PUBLISHED_IMAGE"
+          echo ""
+          echo "Published image (latest):"
+          echo "$PUBLISHED_IMAGE2"
           echo ""
           echo "Image digest:"
           echo "$IMAGE_DIGEST"
