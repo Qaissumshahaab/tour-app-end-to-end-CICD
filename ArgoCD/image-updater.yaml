@@ -1,17 +1,17 @@
-# apiVersion: argocd-image-updater.argoproj.io/v1alpha1
-# kind: ImageUpdater
-# metadata:
-#   name: my-app-image-updater
-#   namespace: argocd
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: my-app-image-updater
+  namespace: argocd
 
-# spec:
-#   writeBackConfig:
-#     method: argocd
+spec:
+  writeBackConfig:
+    method: argocd
 
-#   applicationRefs:
-#     - namePattern: "my-app"
-#       images:
-#         - alias: frontendoftourapp
-#           imageName: ghcr.io/qaissumshahaab/tour-app-end-to-end-cicd:latest
-#           commonUpdateSettings:
-#             updateStrategy: digest
+  applicationRefs:
+    - namePattern: "my-app"
+      images:
+        - alias: frontendoftourapp
+          imageName: ghcr.io/qaissumshahaab/tour-app-end-to-end-cicd:latest
+          commonUpdateSettings:
+            updateStrategy: digest
