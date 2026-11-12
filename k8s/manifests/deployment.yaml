@@ -21,7 +21,8 @@ spec:
           type: RuntimeDefault
       containers:
         - name: tour-app-container
-          image: ghcr.io/qaissumshahaab/tour-app-end-to-end-cicd@sha256:d0fec802002a52b4e32a7cb028f6a3348613a8bb7eff883005c31ef0882083c4
+          image: ghcr.io/qaissumshahaab/tour-app-end-to-end-cicd:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           securityContext:
