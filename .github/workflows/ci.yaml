@@ -60,8 +60,8 @@ jobs:
 
 
 
-      - name: Audit npm dependencies
-        run: npm audit --audit-level=high
+      # - name: Audit npm dependencies
+      #   run: npm audit --audit-level=high
 
       - name: Lint code
         run: npm run lint

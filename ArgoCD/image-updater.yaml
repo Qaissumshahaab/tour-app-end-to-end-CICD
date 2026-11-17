@@ -6,8 +6,9 @@ metadata:
 
 spec:
   writeBackConfig:
-    method: argocd
-
+    method: argocd 
+    ##method: git is more better in some cases because it will create a commit in the git repository and then argocd will sync the changes to the cluster. but in this case we are using argocd method because we want to update the image in the argocd application directly without creating a commit in the git repository.
+    ## method:git is good when k8s and argocd manifest are in seperate repository but in our case repository of source code and k8s and argocd manifest is same and if we use method:git then it will create a commit in the same repository and it will trigger the ci workflow again and it will create a loop. so we are using method:argocd to avoid this loop.
   applicationRefs:
     - namePattern: "my-app"
       images:
